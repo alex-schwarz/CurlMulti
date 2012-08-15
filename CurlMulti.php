@@ -58,6 +58,13 @@ class CurlMultiRequest {
   protected $callback = null;
 
   /**
+   * Callback parameter.
+   * Will be the third parameter of callback.
+   * @var null | mixed
+   */
+  protected $callback_parameter = null;
+
+  /**
    * Info from cURL handle.
    * @var Array
    */
@@ -162,6 +169,16 @@ class CurlMultiRequest {
   }
 
   /**
+   * Sets a callback parameter. Will be the third parameter.
+   * @param $param Parameter
+   * @return $this
+   */
+  public function setCallbackParameter($param) {
+    $this->callback_parameter = $param;
+    return $this;
+  }
+
+  /**
    * Shortcut for getting url.
    * @return String
    */
@@ -226,7 +243,7 @@ class CurlMultiRequest {
 
     // Callback
     if($this->callback) {
-      call_user_func($this->callback, $this, $cmm);
+      call_user_func($this->callback, $this, $cmm, $this->callback_parameter);
     }
     
     return true;

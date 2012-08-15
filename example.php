@@ -22,9 +22,9 @@ $urls = array(
 
 
 // Callback for finished requests
-function callback_output(CurlMultiRequest $request, CurlMultiManager $manager) {
+function callback_output(CurlMultiRequest $request, CurlMultiManager $manager, $parameter) {
   echo 'Request finished: ', $request->getInfo('http_code'),
-       ' - ', $request->getUrl(), PHP_EOL;
+       ' - ', $request->getUrl(), ' Parameter: ', $parameter, PHP_EOL;
 
   if(200 != $request->getInfo('http_code')) {
     // Retry this Request
@@ -40,6 +40,7 @@ $manager = new CurlMultiManager($max_parallel_requests);
 foreach($urls as $url) {
   $request = $manager->newRequest($url);
   $request->setCallback('callback_output');
+  $request->setCallbackParameter('OPTIONAL_PARAMETER');
   $request->setTriesMax($tries_max);
   $manager->startRequest($request);
 }
