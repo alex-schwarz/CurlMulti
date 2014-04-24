@@ -439,18 +439,33 @@ class CurlMultiManager {
 
     // Call with empty timeout if there is anything to do
     // A timeout > would block.
-    if (curl_multi_select($this->multi_handle, 0.0) === -1) {
+        /*if (curl_multi_select($this->multi_handle, 0.0) === -1) {
+
       // Nothing to do
       return;
-    }
+        }*/
 
     // Process what is active
-    do {
+       /* do {
       $mrc = curl_multi_exec($this->multi_handle, $active);
       // Sleep some milliseconds to avoid CPU usage.
-      usleep(200);
+            usleep(1);
+        }
+        while($mrc == CURLM_CALL_MULTI_PERFORM);*/
+
+        do {
+            $mrc = curl_multi_exec($this->multi_handle, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+        while ($active && $mrc == CURLM_OK) {
+            if (curl_multi_select($this->multi_handle) != -1) {
+                do {
+                    $mrc = curl_multi_exec($this->multi_handle, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            }
+            else
+                return;
     }
-    while($mrc == CURLM_CALL_MULTI_PERFORM);
 
     // Process completed Requests
     do {
